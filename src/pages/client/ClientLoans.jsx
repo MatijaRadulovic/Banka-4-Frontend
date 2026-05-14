@@ -10,7 +10,7 @@ import LoanDetails from '../../features/loans/LoanDetails';
 import Spinner from '../../components/ui/Spinner';
 import Alert   from '../../components/ui/Alert';
 import styles from './ClientSubPage.module.css';
-import Navbar from '../../components/layout/Navbar';
+import ClientHeader from '../../components/layout/ClientHeader';
 
 const LOAN_TYPES = [
   { value: 'CASH',     label: 'Keš kredit',      maxMonths: 84  },
@@ -136,10 +136,9 @@ export default function ClientLoans() {
 
   return (
     <div>
-      <Navbar />
+      <ClientHeader />
       <div ref={pageRef} className={styles.page}>
         <div className={styles.topBar}>
-          <button className={styles.back} onClick={() => navigate('/dashboard')}>← Nazad</button>
           <h1 className={styles.title}>Krediti</h1>
           <button className={styles.newBtn} onClick={openForm}>+ Novi zahtev</button>
         </div>

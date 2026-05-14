@@ -3,8 +3,7 @@ describe('Scenario 40: Admin menja podatke klijenta', () => {
         cy.loginAsAdmin();
         const apiUrl = Cypress.env('API_URL');
 
-        cy.server();
-        cy.route('GET', `${apiUrl}/clients*`, {
+        cy.intercept('GET', `${apiUrl}/clients*`, {
             statusCode: 200,
             body: {
                 data: [
@@ -23,7 +22,7 @@ describe('Scenario 40: Admin menja podatke klijenta', () => {
             },
         }).as('getClients');
 
-        cy.route('PUT', '**/clients/*', {
+        cy.intercept('PUT', '**/clients/*', {
             statusCode: 200,
             body: {
                 message: 'Podaci klijenta su uspesno izmenjeni.',
@@ -31,7 +30,7 @@ describe('Scenario 40: Admin menja podatke klijenta', () => {
             },
         }).as('updateClient');
 
-        cy.route('PATCH', '**/clients/*', {
+        cy.intercept('PATCH', '**/clients/*', {
             statusCode: 200,
             body: {
                 message: 'Podaci klijenta su uspesno izmenjeni.',

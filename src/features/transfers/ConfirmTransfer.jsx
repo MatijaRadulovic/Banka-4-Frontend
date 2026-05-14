@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Alert from '../../components/ui/Alert';
+import ClientHeader from '../../components/layout/ClientHeader';
 import { transfersApi } from '../../api/endpoints/transfers';
 import { useAuthStore } from '../../store/authStore';
 import styles from './transfers.module.css';
@@ -83,6 +84,8 @@ export default function ConfirmTransfer() {
     };
 
     return (
+        <>
+        <ClientHeader activeNav="transfers" />
         <div className={styles.stranica}>
             <main className={styles.sadrzaj}>
                 <div className="page-anim">
@@ -211,5 +214,6 @@ export default function ConfirmTransfer() {
             </main>
 
         </div>
+        </>
     );
 }

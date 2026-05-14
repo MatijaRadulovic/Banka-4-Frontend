@@ -3,8 +3,7 @@ describe('Scenario 12: Plaćanje u različitim valutama uz konverziju (Transfer 
     it('sa prvog računa prebacuje na drugi i radi konverziju + proviziju', () => {
         cy.loginAsClient();
 
-        cy.server();
-        cy.route('GET', '**/clients/*/accounts*', {
+        cy.intercept('GET', '**/clients/*/accounts*', {
             statusCode: 200,
             body: {
                 data: [
@@ -15,7 +14,7 @@ describe('Scenario 12: Plaćanje u različitim valutama uz konverziju (Transfer 
             },
         }).as('getAccounts');
 
-        cy.route('POST', '**/clients/*/transfers', {
+        cy.intercept('POST', '**/clients/*/transfers', {
             statusCode: 201,
             body: {
                 message: 'Transfer uspešno izvršen',

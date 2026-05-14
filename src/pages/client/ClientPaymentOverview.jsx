@@ -5,6 +5,7 @@ import { useFetch } from '../../hooks/useFetch';
 import { paymentsApi } from '../../api/endpoints/payments';
 import { useAuthStore } from '../../store/authStore';
 import Spinner from '../../components/ui/Spinner';
+import ClientHeader from '../../components/layout/ClientHeader';
 import styles from './ClientPaymentOverview.module.css';
 
 function formatDateTime(dateStr) {
@@ -142,10 +143,11 @@ export default function ClientPaymentOverview() {
   }
 
   return (
-    <div ref={pageRef} className={styles.page}>
+    <>
+      <ClientHeader activeNav="payments" />
+      <div ref={pageRef} className={styles.page}>
       {/* Top bar */}
       <div className={`po-anim ${styles.topBar}`}>
-        <button className={styles.back} onClick={() => navigate('/dashboard')}>← Nazad</button>
         <div>
           <h1 className={styles.title}>Pregled plaćanja</h1>
           <p className={styles.subtitle}>Istorija svih transakcija i menjačkih poslova</p>
@@ -270,5 +272,6 @@ export default function ClientPaymentOverview() {
         <TransactionModal tx={selectedTx} onClose={() => setSelectedTx(null)} />
       )}
     </div>
+    </>
   );
 }

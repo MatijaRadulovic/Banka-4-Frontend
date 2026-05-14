@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { exchangeApi } from '../../api/endpoints/exchange';
 import { useFetch } from '../../hooks/useFetch';
 import Spinner from '../../components/ui/Spinner';
+import ClientHeader from '../../components/layout/ClientHeader';
 import styles from './ClientSubPage.module.css';
 
 const FLAG_EMOJI = {
@@ -55,9 +56,10 @@ export default function ClientExchange() {
   if (loading) return <Spinner />;
 
   return (
-    <div ref={pageRef} className={styles.page}>
+    <>
+      <ClientHeader activeNav="exchange" />
+      <div ref={pageRef} className={styles.page}>
       <div className={styles.topBar}>
-        <button className={styles.back} onClick={() => navigate('/dashboard')}>← Nazad</button>
         <h1 className={styles.title}>Menjačnica</h1>
       </div>
 
@@ -143,5 +145,6 @@ export default function ClientExchange() {
         </p>
       </div>
     </div>
+    </>
   );
 }

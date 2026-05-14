@@ -3,13 +3,12 @@ describe('Scenario 3: Kreiranje racuna sa automatskim kreiranjem kartice', () =>
         cy.loginAsAdmin();
         const apiUrl = Cypress.env('API_URL');
 
-        cy.server();
-        cy.route('GET', `${apiUrl}/clients*`, {
+        cy.intercept('GET', `${apiUrl}/clients*`, {
             statusCode: 200,
             body: { data: [{ id: 501, first_name: 'Test', last_name: 'Klijent', email: 'klijent@gmail.com' }] },
         }).as('searchClient');
 
-        cy.route('POST', '**/accounts', {
+        cy.intercept('POST', '**/accounts', {
             statusCode: 201,
             body: {
                 data: {

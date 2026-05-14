@@ -7,6 +7,7 @@ import { useFetch } from '../../hooks/useFetch';
 import { useAuthStore } from '../../store/authStore';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
+import ClientHeader from '../../components/layout/ClientHeader';
 import styles from './ClientSubPage.module.css';
 
 function maskNumber(num) {
@@ -123,9 +124,10 @@ export default function ClientCards() {
   const loading = loadingAccounts || loadingCards;
 
   return (
-    <div ref={pageRef} className={styles.page}>
+    <>
+      <ClientHeader activeNav="cards" />
+      <div ref={pageRef} className={styles.page}>
       <div className={styles.topBar}>
-        <button className={styles.back} onClick={() => navigate('/dashboard')}>← Nazad</button>
         <h1 className={styles.title}>Moje kartice</h1>
       </div>
 
@@ -182,5 +184,6 @@ export default function ClientCards() {
         </div>
       )}
     </div>
+    </>
   );
 }

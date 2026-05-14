@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import Navbar from '../../components/layout/Navbar';
+import ClientHeader from '../../components/layout/ClientHeader';
 import Spinner from '../../components/ui/Spinner';
 import { useAuthStore } from '../../store/authStore';
 import { accountsApi } from '../../api/endpoints/accounts';
@@ -677,6 +678,8 @@ function SklopljeniUgovori() {
 export default function OtcPortalPage() {
   const pageRef = useRef(null);
   const [activeTab, setActiveTab] = useState(TAB.DOSTUPNE);
+  const user = useAuthStore(s => s.user);
+  const isClient = user?.identity_type === 'client';
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -695,7 +698,7 @@ export default function OtcPortalPage() {
 
   return (
     <div ref={pageRef} className={styles.stranica}>
-      <Navbar />
+      {isClient ? <ClientHeader /> : <Navbar />}
 
       <main className={styles.sadrzaj}>
         <div className="page-anim">

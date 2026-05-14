@@ -5,7 +5,7 @@ describe('Scenario 43: Klijent pregleda svoje fondove u portfoliju', () => {
 
   it('prikazuje fondove sa udelom i profitom u tabu Moji fondovi', () => {
     // Accept either /api/client/... or /client/... depending on API base URL
-    cy.route('GET', '**/client/*/funds').as('getClientFunds');
+    cy.intercept('GET', '**/client/*/funds').as('getClientFunds');
     const formatMoney = (value: number) => Number(value ?? 0).toLocaleString('sr-RS', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     
     // Navigate to portfolio - this triggers the funds API call
@@ -15,9 +15,10 @@ describe('Scenario 43: Klijent pregleda svoje fondove u portfoliju', () => {
     cy.get('[data-testid="tab-funds"]').click();
 
     // Wait for funds to be fetched and verify they exist
-    cy.wait('@getClientFunds', { timeout: 10000 }).then((xhr) => {
-      expect(xhr.status).to.eq(200);
-      const funds = Array.isArray(xhr.responseBody) ? xhr.responseBody : (Array.isArray(xhr.responseBody?.data) ? xhr.responseBody.data : []);
+    cy.wait('@getClientFunds', { timeout: 10000 }).then((interception) => {
+      expect(interception.response?.statusCode).to.eq(200);
+      const body = interception.response?.body;
+      const funds = Array.isArray(body) ? body : (Array.isArray(body?.data) ? body.data : []);
       expect(funds.length, 'mora postojati bar jedan fond u portfoliju').to.be.greaterThan(0);
 
       const firstFund = funds[0];

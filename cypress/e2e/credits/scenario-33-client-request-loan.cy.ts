@@ -2,8 +2,7 @@ describe('Scenario 33: Klijent podnosi zahtev za kredit', () => {
     it('otvara formu i salje validan zahtev', () => {
         cy.loginAsClient();
 
-        cy.server();
-        cy.route('GET', '**/clients/*/accounts*', {
+        cy.intercept('GET', '**/clients/*/accounts*', {
             statusCode: 200,
             body: {
                 data: [
@@ -12,12 +11,12 @@ describe('Scenario 33: Klijent podnosi zahtev za kredit', () => {
             },
         }).as('getAccounts');
 
-        cy.route('GET', '**/clients/*/loans*', {
+        cy.intercept('GET', '**/clients/*/loans*', {
             statusCode: 200,
             body: { data: [] },
         }).as('getLoans');
 
-        cy.route('POST', '**/clients/*/loans/request', {
+        cy.intercept('POST', '**/clients/*/loans/request', {
             statusCode: 201,
             body: {
                 message: 'Zahtev je uspesno podnet i ceka odobrenje.',

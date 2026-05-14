@@ -19,6 +19,7 @@ import {
 } from '../../utils/cardHelpers';
 import styles from './CardsPage.module.css';
 import Navbar from '../../components/layout/Navbar';
+import ClientHeader from '../../components/layout/ClientHeader';
 
 const VIEW_MODE = {
   OVERVIEW: 'overview',
@@ -244,7 +245,7 @@ export default function CardsPage({ portalType = PORTAL_TYPE.CLIENT }) {
 
   return (
     <div ref={pageRef} className={styles.page}>
-      <Navbar />
+      {isAdmin ? <Navbar /> : <ClientHeader activeNav="cards" />}
       <main className={styles.sadrzaj}>
 
       {error && <div className="page-anim"><Alert tip="greska" poruka={error} /></div>}

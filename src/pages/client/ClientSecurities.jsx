@@ -11,7 +11,7 @@ import SecurityDetails from '../../features/securities/SecurityDetails';
 import FiltersPanel, { DEFAULT_FILTERS } from '../../features/securities/FiltersPanel';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
-import Navbar from '../../components/layout/Navbar';
+import ClientHeader from '../../components/layout/ClientHeader';
 import styles from './ClientSubPage.module.css';
 import secStyles from './ClientSecurities.module.css';
 import { clientApi } from '../../api/endpoints/client';
@@ -773,7 +773,7 @@ export default function ClientSecurities() {
 
   return (
     <div ref={pageRef} className={secStyles.pageContainer}>
-      <Navbar />
+      <ClientHeader />
 
       <main className={secStyles.pageContent}>
         <div className={styles.pageHeader}>

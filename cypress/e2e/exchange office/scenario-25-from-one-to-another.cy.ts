@@ -4,8 +4,7 @@ describe('Scenario 25: Provera ekvivalentnosti valute (Kalkulator)', () => {
     it('izračunava iznos konverzije bez izvršavanja transakcije', () => {
         cy.loginAsClient();
 
-        cy.server();
-        cy.route('GET', '**/exchange/rates*', {
+        cy.intercept('GET', '**/exchange/rates*', {
             statusCode: 200,
             body: {
                 rates: [

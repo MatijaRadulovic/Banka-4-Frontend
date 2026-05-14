@@ -6,6 +6,7 @@ import { clientApi } from '../../api/endpoints/client';
 import { exchangeApi } from '../../api/endpoints/exchange';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
+import ClientHeader from '../../components/layout/ClientHeader';
 import styles from './transfers.module.css';
 import { useAuthStore } from '../../store/authStore';
 
@@ -145,11 +146,12 @@ export default function CreateTransfer() {
     if (error) return <Alert tip="greska" poruka="Ne mogu da učitam račune" />;
 
     return (
+        <>
+        <ClientHeader activeNav="transfers" />
         <div ref={pageRef} className={styles.stranica}>
             <main className={styles.sadrzaj}>
                 <div>
                     <div className={styles.breadcrumb}>Transferi › Novi transfer</div>
-                    <button className={styles.back} onClick={() => navigate('/dashboard')}>← Nazad</button>
                     <h1 className={styles.pageTitle}>Kreiraj transfer</h1>
                 </div>
 
@@ -238,5 +240,6 @@ export default function CreateTransfer() {
                 </div>
             </main>
         </div>
+        </>
     );
 }

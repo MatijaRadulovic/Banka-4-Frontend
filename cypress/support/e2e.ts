@@ -19,7 +19,3 @@
 // cypress/support/e2e.ts
 require('./commands');
 
-// Setup cy.server() globally before each test so routes can be configured
-beforeEach(() => {
-  cy.server();
-});

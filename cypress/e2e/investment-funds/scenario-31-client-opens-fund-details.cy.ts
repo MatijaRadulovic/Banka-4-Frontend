@@ -6,31 +6,29 @@ describe('Scenario 31: Klijent otvara detaljan prikaz fonda', () => {
   it('prikazuje detalje fonda, listu hartija i performanse iz realnog endpointa', () => {
     const { extractFundsList } = require('./helpers');
 
-    cy.route('GET', '**/api/investment-funds', (req) => {
-      // List endpoint - matches GET /api/investment-funds
-    }).as('getFunds');
-    cy.route('GET', '**/api/investment-funds/*').as('getFundDetails');
+    cy.intercept('GET', '**/api/investment-funds').as('getFunds');
+    cy.intercept('GET', '**/api/investment-funds/*').as('getFundDetails');
 
     // Navigate to investment funds page - this triggers the funds list API call
     cy.visit('http://localhost:5173/investment-funds');
 
-    cy.wait('@getFunds').then((xhr) => {
-      expect(xhr.status).to.eq(200);
-      const funds = extractFundsList(xhr.responseBody);
+    cy.wait('@getFunds').then((interception) => {
+      expect(interception.response?.statusCode).to.eq(200);
+      const funds = extractFundsList(interception.response?.body);
       expect(funds.length, 'mora postojati bar jedan fond').to.be.greaterThan(0);
-      
+
       const firstFund = funds[0];
       const fundId = firstFund.fund_id ?? firstFund.id;
       expect(fundId, 'fund must have ID').to.exist;
-      
+
       // Navigate to fund detail page
       cy.visit(`http://localhost:5173/investment-funds/${fundId}`);
     });
 
-    cy.wait('@getFundDetails').then((xhr) => {
-      expect(xhr.status).to.eq(200);
+    cy.wait('@getFundDetails').then((interception) => {
+      expect(interception.response?.statusCode).to.eq(200);
 
-      const details = xhr.responseBody ?? {};
+      const details = interception.response?.body ?? {};
       const holdings = Array.isArray(details.holdings) ? details.holdings : [];
       const performance = Array.isArray(details.performance_history) ? details.performance_history : [];
 

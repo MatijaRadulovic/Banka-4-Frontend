@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { clientApi } from '../../api/endpoints/client';
 import { useFetch } from '../../hooks/useFetch';
 import Spinner from '../../components/ui/Spinner';
+import ClientHeader from '../../components/layout/ClientHeader';
 import styles from './ClientSubPage.module.css';
 import rStyles from './ClientRecipients.module.css';
 
@@ -207,9 +208,10 @@ export default function ClientRecipients() {
   }
 
   return (
-    <div ref={pageRef} className={styles.page}>
+    <>
+      <ClientHeader activeNav="payments" />
+      <div ref={pageRef} className={styles.page}>
       <div className={styles.topBar}>
-        <button className={styles.back} onClick={() => navigate('/dashboard')}>← Nazad</button>
         <h1 className={styles.title}>Primaoci plaćanja</h1>
         <button className={styles.newBtn} onClick={() => { setEditTarget(null); setModalOpen(true); }}>
           + Dodaj novog primaoca
@@ -271,5 +273,6 @@ export default function ClientRecipients() {
         onConfirm={handleDelete}
       />
     </div>
+    </>
   );
 }

@@ -77,7 +77,7 @@ export default function LimitModal({ open, onClose, onConfirm, actuary, loading 
               Otkaži
             </button>
             <button type="submit" className={styles.btnPrimary} disabled={loading}>
-              {loading ? 'Čuvanje...' : 'Sačuvaj'}
+              {loading ? 'Čuvanje...' : 'Potvrdi'}
             </button>
           </div>
         </form>

@@ -3,7 +3,7 @@
     "target": "ES2020",
     "lib": ["ES2020", "DOM"],
     "types": ["cypress", "node", "mocha"],
-    "typeRoots": ["../node_modules/@types", "../node_modules/cypress/types"],
+    "typeRoots": ["../node_modules/@types", "../node_modules"],
     "moduleResolution": "node",
     "module": "ESNext",
     "skipLibCheck": true,

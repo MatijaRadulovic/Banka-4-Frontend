@@ -3,8 +3,7 @@ describe('Scenario 39: Admin pretrazuje klijenta', () => {
         cy.loginAsAdmin();
         const apiUrl = Cypress.env('API_URL');
 
-        cy.server();
-        cy.route('GET', `${apiUrl}/clients*`, {
+        cy.intercept('GET', `${apiUrl}/clients*`, {
             statusCode: 200,
             body: {
                 data: [

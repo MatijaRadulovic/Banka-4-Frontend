@@ -6,6 +6,7 @@ import { paymentsApi } from '../../api/endpoints/payments';
 import { useAuthStore } from '../../store/authStore';
 import { useFetch } from '../../hooks/useFetch';
 import Spinner from '../../components/ui/Spinner';
+import ClientHeader from '../../components/layout/ClientHeader';
 import styles from './ClientSubPage.module.css';
 import pStyles from './NewPayment.module.css';
 
@@ -253,9 +254,10 @@ export default function NewPayment() {
   }
 
   return (
-    <div ref={pageRef} className={styles.page}>
+    <>
+      <ClientHeader activeNav="payments" />
+      <div ref={pageRef} className={styles.page}>
       <div className={styles.topBar}>
-        <button className={styles.back} onClick={() => navigate('/dashboard')}>← Nazad</button>
         <h1 className={styles.title}>Novo plaćanje</h1>
         <span />
       </div>
@@ -404,5 +406,6 @@ export default function NewPayment() {
         loading={submitting}
       />
     </div>
+    </>
   );
 }

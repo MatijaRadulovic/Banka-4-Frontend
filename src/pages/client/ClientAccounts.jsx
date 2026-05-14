@@ -7,6 +7,7 @@ import { accountsApi } from '../../api/endpoints/accounts';
 import { useFetch } from '../../hooks/useFetch';
 import { useAuthStore } from '../../store/authStore';
 import Spinner from '../../components/ui/Spinner';
+import ClientHeader from '../../components/layout/ClientHeader';
 import styles from './ClientAccounts.module.css';
 
 function formatAmount(amount, currency = 'RSD') {
@@ -412,9 +413,10 @@ export default function ClientAccounts() {
   }
 
   return (
-    <div ref={pageRef} className={styles.page}>
+    <>
+      <ClientHeader activeNav="accounts" />
+      <div ref={pageRef} className={styles.page}>
       <div className={styles.topBar}>
-        <button className={styles.back} onClick={() => navigate('/dashboard')}>← Nazad</button>
         <h1 className={styles.title}>Moji računi</h1>
       </div>
 
@@ -552,5 +554,6 @@ export default function ClientAccounts() {
         />
       )}
     </div>
+    </>
   );
 }
