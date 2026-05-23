@@ -169,6 +169,7 @@ function DostupneAkcije() {
                 <th>TICKER</th>
                 <th>NAZIV</th>
                 <th>VLASNIK</th>
+                <th>BANKA PRODAVCA</th>
                 <th>DOSTUPNO</th>
                 <th>CENA</th>
                 <th style={{ textAlign: 'right' }}>AKCIJA</th>
@@ -180,6 +181,7 @@ function DostupneAkcije() {
                   <td className={styles.ticker}>{stock.ticker ?? '—'}</td>
                   <td>{stock.name ?? stock.stock_name ?? '—'}</td>
                   <td>{stock.owner_name ?? '—'}</td>
+                  <td>{stock.bank_name ?? '—'}</td>
                   <td>{stock.available_amount ?? stock.public_amount ?? stock.amount ?? '—'}</td>
                   <td>{stock.price != null ? `$${Number(stock.price).toFixed(2)}` : '—'}</td>
                   <td style={{ textAlign: 'right' }}>
