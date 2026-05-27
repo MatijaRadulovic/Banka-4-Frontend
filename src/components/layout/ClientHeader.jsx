@@ -6,6 +6,8 @@ import { usePermissions } from '../../hooks/usePermissions';
 import Toast from '../ui/Toast';
 import { useOtcNotifStore } from '../../store/otcNotificationsStore';
 import { useOtcOfferPolling } from '../../hooks/useOtcOfferPolling';
+import WatchlistWidget from './WatchlistWidget';
+import { useWatchlistStore } from '../../store/watchlistStore';
 /**
  * Zajednički header za sve klijentske stranice.
  * Props:
@@ -25,6 +27,12 @@ export default function ClientHeader({ activeNav, onProfileClick }) {
 
   const user   = useAuthStore(s => s.user);
   const logout = useAuthStore(s => s.logout);
+  const initWatchlist = useWatchlistStore(s => s.init);
+
+  useEffect(() => {
+    const uid = user?.client_id ?? user?.employee_id ?? user?.id;
+    if (uid) initWatchlist(String(uid));
+  }, [user?.client_id, user?.employee_id, user?.id, initWatchlist]);
 
   const [showTransfersMenu, setShowTransfersMenu] = useState(false);
   const [showPaymentsMenu,  setShowPaymentsMenu]  = useState(false);
@@ -158,6 +166,8 @@ export default function ClientHeader({ activeNav, onProfileClick }) {
       >
         Moj Portfolio
       </button>
+
+      <WatchlistWidget />
 
       <button
         type="button"

@@ -1,5 +1,6 @@
 import { useRef, useLayoutEffect, useEffect, useState, useMemo, useCallback } from 'react';
 import gsap from 'gsap';
+import { useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { securitiesApi } from '../../api/endpoints/securities';
 import { investmentFundsApi } from '../../api/endpoints/investmentFunds';
@@ -675,6 +676,7 @@ function OrderModal({ security, activeTab, isEmployee, isSupervisor, onClose }) 
 
 export default function ClientSecurities() {
   const pageRef = useRef(null);
+  const location = useLocation();
   const user = useAuthStore(s => s.user);
   const { isSupervisor } = usePermissions();
   const canAccessSupervisorFeatures = Boolean(isSupervisor);
@@ -690,6 +692,29 @@ export default function ClientSecurities() {
   const [sortBy, setSortBy] = useState('');
   const [sortDir, setSortDir] = useState('desc');
   const [orderModal, setOrderModal] = useState(null);
+
+  // Navigate-from-watchlist: location.key changes on every navigation, so this
+  // fires once per arrival whether the component mounts fresh or was already mounted.
+  useEffect(() => {
+    const { selectId, selectType } = location.state ?? {};
+    if (!selectId || !selectType) return;
+    setActiveTab(selectType);
+    setSelectedSec(null);
+    setSearch('');
+    setFilters(DEFAULT_FILTERS);
+    setSortBy('');
+    setSortDir('desc');
+    (async () => {
+      try {
+        let details;
+        if (selectType === 'STOCK')   details = await securitiesApi.getStockById(selectId);
+        if (selectType === 'FUTURES') details = await securitiesApi.getFuturesById(selectId);
+        if (selectType === 'FOREX')   details = await securitiesApi.getForexById(selectId);
+        if (selectType === 'OPTIONS') details = await securitiesApi.getOptionById(selectId);
+        if (details) setSelectedSec(details);
+      } catch { /* fallback: detail pane stays empty */ }
+    })();
+  }, [location.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetcher = useCallback(() => {
     const params = { page: 1, page_size: 500 };
