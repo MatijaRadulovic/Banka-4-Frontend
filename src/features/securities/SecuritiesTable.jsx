@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Pagination from '../../components/ui/Pagination';
+import WatchlistButton from './WatchlistButton';
 import styles from './SecuritiesTable.module.css';
 
 const PAGE_SIZE = 20;
@@ -107,7 +108,7 @@ export default function SecuritiesTable({
             {(isOption || isFutures) && <th className={styles.th}>Datum isteka</th>}
             {!isOption && <Th col="maintenanceMargin">Maint. Margin</Th>}
             {!isOption && <th className={styles.th}>Init. Margin Cost</th>}
-            {onAction && <th className={styles.th}></th>}
+            <th className={styles.th}></th>
           </tr>
         </thead>
         <tbody>
@@ -158,16 +159,18 @@ export default function SecuritiesTable({
                 </td>
                 )}
                 {!isOption && <td className={styles.td}>{fmt(sec.initialMarginCost)}</td>}
-                {onAction && (
-                  <td className={styles.td} onClick={e => e.stopPropagation()}>
+                <td className={styles.td} onClick={e => e.stopPropagation()} style={{ whiteSpace: 'nowrap' }}>
+                  {onAction && (
                     <button
                       className={styles.actionBtn}
                       onClick={() => onAction.handler(sec)}
+                      style={{ marginRight: 6 }}
                     >
                       {onAction.label}
                     </button>
-                  </td>
-                )}
+                  )}
+                  <WatchlistButton security={sec} />
+                </td>
               </tr>
             );
           })}
