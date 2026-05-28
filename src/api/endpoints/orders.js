@@ -46,8 +46,7 @@ export const ordersApi = {
   },
 
   getMyOrders(params = {}) {
-    // Backend: GET /api/orders  (orders for authenticated user)
-    return tradingApi.get('/orders', { params: { page: 1, page_size: 100, ...params } });
+    return tradingApi.get('/orders/my', { params: { page: 1, page_size: 100, ...params } });
   },
 
 };
