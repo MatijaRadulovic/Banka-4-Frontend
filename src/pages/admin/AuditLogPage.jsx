@@ -16,6 +16,23 @@ const ACTION_OPTIONS = [
   { value: 'MANUAL_TAX_CALCULATION_STARTED', label: 'Rucni obracun poreza' },
 ];
 
+const ACTION_ALIASES = {
+  LIMIT_CHANGED: 'AGENT_LIMIT_CHANGED',
+  AGENT_LIMIT_CHANGE: 'AGENT_LIMIT_CHANGED',
+  CHANGE_AGENT_LIMIT: 'AGENT_LIMIT_CHANGED',
+  USED_LIMIT_RESET: 'AGENT_USED_LIMIT_RESET',
+  RESET_USED_LIMIT: 'AGENT_USED_LIMIT_RESET',
+  ORDER_APPROVE: 'ORDER_APPROVED',
+  ORDER_APPROVED_BY_SUPERVISOR: 'ORDER_APPROVED',
+  ORDER_DECLINED: 'ORDER_REJECTED',
+  ORDER_DENIED: 'ORDER_REJECTED',
+  ORDER_REJECT: 'ORDER_REJECTED',
+  PERMISSIONS_CHANGED: 'EMPLOYEE_PERMISSIONS_CHANGED',
+  EMPLOYEE_PERMISSION_CHANGED: 'EMPLOYEE_PERMISSIONS_CHANGED',
+  TAX_CALCULATION_STARTED: 'MANUAL_TAX_CALCULATION_STARTED',
+  MANUAL_TAX_CALCULATION: 'MANUAL_TAX_CALCULATION_STARTED',
+};
+
 const ACTION_LABELS = ACTION_OPTIONS.reduce((acc, option) => {
   if (option.value) acc[option.value] = option.label;
   return acc;
@@ -52,36 +69,59 @@ function formatDate(value) {
   }).format(date);
 }
 
+function detailValue(entry, keys) {
+  const details = entry.details ?? entry.metadata ?? {};
+
+  if (details && typeof details === 'object') {
+    for (const key of keys) {
+      if (details[key] != null) return details[key];
+    }
+  }
+
+  if (typeof details === 'string') {
+    for (const key of keys) {
+      const match = details.match(new RegExp(`(?:^|[\\s,;])${key}\\s*[:=]\\s*([^\\s,;]+)`, 'i'));
+      if (match?.[1]) return match[1];
+    }
+  }
+
+  return undefined;
+}
+
 function actorName(entry) {
-  const actor = entry.actor ?? entry.user ?? entry.employee ?? entry.performed_by;
+  const actor = entry.actor ?? entry.user ?? entry.employee ?? entry.performed_by ?? entry.performedBy;
   if (typeof actor === 'string') return actor;
   const fullName = [actor?.first_name ?? actor?.firstName, actor?.last_name ?? actor?.lastName]
     .filter(Boolean)
     .join(' ');
-  return fullName || actor?.email || entry.actor_email || entry.user_email || entry.username || '-';
+  const actorId = entry.actor_id ?? entry.actorId ?? entry.user_id ?? entry.userId ?? entry.employee_id ?? entry.employeeId ?? entry.performed_by_id ?? entry.performedById;
+  return fullName || actor?.email || entry.actor_email || entry.actorEmail || entry.user_email || entry.userEmail || entry.username || entry.performed_by || entry.performedBy || (actorId != null ? `Korisnik #${actorId}` : '-');
 }
 
 function targetName(entry) {
-  const target = entry.target ?? entry.target_user ?? entry.subject ?? entry.employee_target;
+  const target = entry.target ?? entry.target_user ?? entry.targetUser ?? entry.subject ?? entry.employee_target ?? entry.employeeTarget ?? entry.object ?? entry.resource;
   if (typeof target === 'string') return target;
-  return [target?.first_name ?? target?.firstName, target?.last_name ?? target?.lastName]
+  const targetDisplayName = [target?.first_name ?? target?.firstName, target?.last_name ?? target?.lastName]
     .filter(Boolean)
-    .join(' ') || target?.email || entry.target_email || entry.target_id || entry.order_id || '-';
+    .join(' ') || target?.email || entry.target_email || entry.targetEmail || entry.target_id || entry.targetId;
+  const orderId = detailValue(entry, ['order_id', 'orderId']) ?? entry.order_id ?? entry.orderId;
+  return targetDisplayName || (orderId != null ? `Order #${orderId}` : '-');
 }
 
 function normalizeAction(entry) {
-  return entry.action_type ?? entry.actionType ?? entry.type ?? entry.action ?? '';
+  const rawAction = entry.action_type ?? entry.actionType ?? entry.type ?? entry.action ?? '';
+  const normalizedAction = String(rawAction).toUpperCase();
+  return ACTION_ALIASES[normalizedAction] ?? normalizedAction;
 }
 
 function formatDetails(entry, action) {
   if (entry.description) return entry.description;
-  if (entry.details && typeof entry.details === 'string') return entry.details;
 
   const details = entry.details ?? entry.metadata ?? {};
-  const oldLimit = details.old_limit ?? details.oldLimit ?? entry.old_limit;
-  const newLimit = details.new_limit ?? details.newLimit ?? entry.new_limit;
-  const orderId = details.order_id ?? details.orderId ?? entry.order_id;
-  const permissions = details.permissions ?? details.new_permissions ?? entry.permissions;
+  const oldLimit = detailValue(entry, ['old_limit', 'oldLimit']) ?? entry.old_limit;
+  const newLimit = detailValue(entry, ['new_limit', 'newLimit']) ?? entry.new_limit;
+  const orderId = detailValue(entry, ['order_id', 'orderId']) ?? entry.order_id ?? entry.orderId;
+  const permissions = detailValue(entry, ['permissions', 'new_permissions', 'newPermissions']) ?? entry.permissions;
 
   if (action === 'AGENT_LIMIT_CHANGED') {
     return `Novi limit: ${Number(newLimit ?? 0).toLocaleString('sr-RS')} RSD${oldLimit != null ? `, prethodno ${Number(oldLimit).toLocaleString('sr-RS')} RSD` : ''}.`;
@@ -89,7 +129,7 @@ function formatDetails(entry, action) {
   if (action === 'AGENT_USED_LIMIT_RESET') return 'Iskorisceni limit je resetovan na 0 RSD.';
   if (action === 'ORDER_APPROVED') return `Odobren order ${orderId ?? targetName(entry)}.`;
   if (action === 'ORDER_REJECTED') {
-    const reason = details.reason ?? entry.reason;
+    const reason = detailValue(entry, ['reason']) ?? entry.reason;
     return `Odbijen order ${orderId ?? targetName(entry)}${reason ? `: ${reason}` : '.'}`;
   }
   if (action === 'EMPLOYEE_PERMISSIONS_CHANGED') {
@@ -97,6 +137,8 @@ function formatDetails(entry, action) {
     return value ? `Nove permisije: ${value}.` : 'Permisije zaposlenog su izmenjene.';
   }
   if (action === 'MANUAL_TAX_CALCULATION_STARTED') return 'Pokrenut je rucni obracun poreza.';
+
+  if (typeof details === 'string') return details;
 
   if (details && typeof details === 'object' && Object.keys(details).length > 0) {
     return Object.entries(details)
@@ -114,7 +156,7 @@ function normalizeEntry(entry) {
     actionLabel: actionLabel(action),
     actor: actorName(entry),
     target: targetName(entry),
-    createdAt: entry.created_at ?? entry.createdAt ?? entry.timestamp ?? entry.performed_at,
+    createdAt: entry.created_at ?? entry.createdAt ?? entry.timestamp ?? entry.performed_at ?? entry.performedAt,
     details: formatDetails(entry, action),
   };
 }
@@ -135,7 +177,7 @@ export default function AuditLogPage() {
       const response = await auditLogsApi.getAll();
       setLogs(unwrapList(response).map(normalizeEntry));
     } catch (err) {
-      setError(err?.response?.data?.error ?? err?.message ?? 'Greska pri ucitavanju audit loga.');
+      setError(err?.response?.data?.error ?? err?.error ?? err?.message ?? 'Greska pri ucitavanju audit loga.');
     } finally {
       setLoading(false);
     }
@@ -159,7 +201,7 @@ export default function AuditLogPage() {
 
     return logs.filter(log => {
       if (appliedFilters.action_type && log.action !== appliedFilters.action_type) return false;
-      if (user && !`${log.actor} ${log.target}`.toLowerCase().includes(user)) return false;
+      if (user && !`${log.actor} ${log.target} ${log.details}`.toLowerCase().includes(user)) return false;
       const time = new Date(log.createdAt).getTime();
       if (from && time < from) return false;
       if (to && time > to) return false;
