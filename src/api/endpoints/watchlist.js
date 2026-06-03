@@ -17,7 +17,7 @@ function normalizeAssetType(type) {
     case 'stock':
       return 'STOCK';
     case 'option':
-      return 'OPTIONS';
+      return 'OPTION';
     case 'future':
       return 'FUTURES';
     case 'forexPair':

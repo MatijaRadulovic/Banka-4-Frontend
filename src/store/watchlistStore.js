@@ -4,6 +4,12 @@ import { watchlistApi } from '../api/endpoints/watchlist';
 export const useWatchlistStore = create((set, get) => ({
   watchlists: [],
   userId: null,
+  toastOpen: false,
+  toastMsg: '',
+
+  closeToast() {
+    set({ toastOpen: false });
+  },
 
   init(userId) {
     if (get().userId === userId) return;
@@ -35,25 +41,42 @@ export const useWatchlistStore = create((set, get) => ({
   },
 
   async createWatchlist(name) {
-    const response = await watchlistApi.createWatchlist(name);
-    const result = response?.data ?? response;
-    await get().loadWatchlists();
-    return result?.id ?? null;
+    try {
+      const response = await watchlistApi.createWatchlist(name);
+      const result = response?.data ?? response;
+      await get().loadWatchlists();
+      return result?.id ?? null;
+    } catch {
+      set({ toastOpen: true, toastMsg: 'Greška pri kreiranju liste. Pokušajte ponovo.' });
+      return null;
+    }
   },
 
   async deleteWatchlist(id) {
-    await watchlistApi.deleteWatchlist(id);
-    await get().loadWatchlists();
+    try {
+      await watchlistApi.deleteWatchlist(id);
+      await get().loadWatchlists();
+    } catch {
+      set({ toastOpen: true, toastMsg: 'Greška pri brisanju liste. Pokušajte ponovo.' });
+    }
   },
 
   async addSecurity(watchlistId, sec) {
-    await watchlistApi.addSecurity(watchlistId, sec.id);
-    await get().loadWatchlists();
+    try {
+      await watchlistApi.addSecurity(watchlistId, sec.id);
+      await get().loadWatchlists();
+    } catch {
+      set({ toastOpen: true, toastMsg: 'Greška pri dodavanju hartije u listu. Pokušajte ponovo.' });
+    }
   },
 
   async removeSecurity(watchlistId, secId) {
-    await watchlistApi.removeSecurity(watchlistId, secId);
-    await get().loadWatchlists();
+    try {
+      await watchlistApi.removeSecurity(watchlistId, secId);
+      await get().loadWatchlists();
+    } catch {
+      set({ toastOpen: true, toastMsg: 'Greška pri uklanjanju hartije iz liste. Pokušajte ponovo.' });
+    }
   },
 
   isWatched(secId) {
