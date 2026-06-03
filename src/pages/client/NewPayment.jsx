@@ -55,7 +55,7 @@ function VerifyModal({ open, onClose, onConfirm, loading }) {
     return () => { cancelled = true; };
   }, [open]);
 
-  useEffect(() => {
+useEffect(() => {
   if (!open || !deadlineServerMs) return;
 
   const id = setInterval(() => {
@@ -64,12 +64,16 @@ function VerifyModal({ open, onClose, onConfirm, loading }) {
     setSecondsLeft(next);
 
     if (diffMs <= 0) {
-      clearInterval(id);              
-      setSecondsLeft(0);
+      clearInterval(id);
+
+      // restart 30s window (server-synced)
+      const nowServer = serverNowMs();
+      setDeadlineServerMs(nowServer + OTP_WINDOW_SECONDS * 1000);
+      setSecondsLeft(OTP_WINDOW_SECONDS);
+
+      // opcionalno: očisti input i grešku
       setCode('');
-      setCodeError('Kod je istekao. Pokrenite verifikaciju ponovo.');
-      setDeadlineServerMs(null);      
-      onClose();                      
+      setCodeError('');
     }
   }, 250);
 
