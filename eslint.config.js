@@ -6,6 +6,21 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   globalIgnores(['dist']),
+
+  // ✅ Cypress spec files (mocha + cypress globals)
+  {
+    files: ['cypress/**/*.{js,jsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.mocha,
+        ...globals.browser,
+        cy: 'readonly',
+        Cypress: 'readonly',
+      },
+    },
+  },
+
+  // App source files
   {
     files: ['**/*.{js,jsx}'],
     extends: [
