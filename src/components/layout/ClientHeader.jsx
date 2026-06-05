@@ -121,6 +121,8 @@ export default function ClientHeader({ activeNav, onProfileClick }) {
         <button className={styles.headerNavBtn} onClick={() => navigate('/client/cards')}>Kartice</button>
         <button className={styles.headerNavBtn} onClick={() => navigate('/client/loans')}>Krediti</button>
         <button className={styles.headerNavBtn} onClick={() => navigate('/client/securities')}>Hartije</button>
+          <button className={`${styles.headerNavBtn} ${activeNav === 'dtc' ? styles.headerNavBtnActive : ''}`}
+              onClick={() => navigate('/client/dtc')}>DTC</button>
 
         {canTrade && (
             <button className={styles.headerNavBtn} onClick={() => navigate('/otc')}>
