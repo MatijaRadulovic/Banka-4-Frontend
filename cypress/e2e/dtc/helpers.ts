@@ -4,9 +4,9 @@ export const USER_SERVICE_URL = 'http://rafsi.davidovic.io:8080/api';
 export const BANKING_SERVICE_URL = 'http://rafsi.davidovic.io:8081/api';
 export const TRADING_SERVICE_URL = 'http://rafsi.davidovic.io:8082/api';
 
-export const ANA_EMAIL = 'ana.anic@example.com';
-export const ANA_PASSWORD = 'password123';
-export const ANA_ACCOUNT = '444000112345678913';
+export const ANA_EMAIL = Cypress.env('ANA_EMAIL') as string;
+export const ANA_PASSWORD = Cypress.env('ANA_PASSWORD') as string;
+export const ANA_ACCOUNT = Cypress.env('ANA_ACCOUNT') as string;
 
 export function extractArray(body: any): any[] {
     if (Array.isArray(body)) return body;

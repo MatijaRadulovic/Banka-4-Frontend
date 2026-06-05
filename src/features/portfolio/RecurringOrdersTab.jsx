@@ -103,38 +103,6 @@ function normalizeAsset(asset) {
     };
 }
 
-// function normalizeAccount(account, index) {
-//     const id =
-//         account?.account_number ??
-//         account?.accountNumber ??
-//         account?.number ??
-//         account?.id ??
-//         index + 1;
-//
-//     const currency = (
-//         account?.currency ??
-//         account?.Currency?.Code ??
-//         'RSD'
-//     ).toUpperCase();
-//
-//     const balance =
-//         account?.balance ??
-//         account?.available_balance ??
-//         account?.availableBalance ??
-//         account?.Balance;
-//
-//     return {
-//         id: toId(id),
-//         accountNumber: toId(id),
-//         label:
-//             account?.name ??
-//             account?.Name ??
-//             `Račun ${index + 1}`,
-//         balance: balance != null ? Number(balance) : null,
-//         currency,
-//     };
-// }
-
 function normalizeAccount(account, index) {
     const id =
         account?.account_number ??
@@ -495,7 +463,7 @@ export default function RecurringOrdersTab({ ownerId, ownerName, ownedAssets = [
         user?.identityId ??
         user?.id;
 
-    const ownerLabel = getOwnerLabel(user, ownerName);
+    const ownerLabel = useMemo(() => getOwnerLabel(user, ownerName), [user, ownerName]);
 
     const [accounts, setAccounts] = useState([]);
     const [buyAssets, setBuyAssets] = useState([]);
@@ -516,6 +484,7 @@ export default function RecurringOrdersTab({ ownerId, ownerName, ownedAssets = [
     });
 
     const [actionId, setActionId] = useState(null);
+    const [confirmCancelId, setConfirmCancelId] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [formError, setFormError] = useState('');
 
@@ -729,12 +698,9 @@ export default function RecurringOrdersTab({ ownerId, ownerName, ownedAssets = [
     }
 
     async function handleCancel(orderId) {
-        const shouldCancel = window.confirm('Da li ste sigurni da želite da otkažete trajni nalog?');
-
-        if (!shouldCancel) return;
-
         try {
             setActionId(orderId);
+            setConfirmCancelId(null);
 
             await recurringOrdersApi.deleteRecurringOrder(orderId);
 
@@ -875,14 +841,35 @@ export default function RecurringOrdersTab({ ownerId, ownerName, ownedAssets = [
                                             {order.active ? 'Pauziraj' : 'Aktiviraj'}
                                         </button>
 
-                                        <button
-                                            type="button"
-                                            className={styles.dangerButton}
-                                            onClick={() => handleCancel(order.id)}
-                                            disabled={actionId === order.id}
-                                        >
-                                            Otkaži
-                                        </button>
+                                        {confirmCancelId === order.id ? (
+                                            <>
+                                                <span style={{ fontSize: 12 }}>Sigurno?</span>
+                                                <button
+                                                    type="button"
+                                                    className={styles.dangerButton}
+                                                    onClick={() => handleCancel(order.id)}
+                                                    disabled={actionId === order.id}
+                                                >
+                                                    Da
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={styles.secondaryButton}
+                                                    onClick={() => setConfirmCancelId(null)}
+                                                >
+                                                    Ne
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className={styles.dangerButton}
+                                                onClick={() => setConfirmCancelId(order.id)}
+                                                disabled={actionId === order.id}
+                                            >
+                                                Otkaži
+                                            </button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

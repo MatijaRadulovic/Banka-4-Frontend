@@ -1,7 +1,5 @@
 /// <reference types="cypress" />
 
-/// <reference types="cypress" />
-
 import {
     ANA_ACCOUNT,
     ANA_EMAIL,

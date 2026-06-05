@@ -99,19 +99,7 @@ function SupervisorRoute({ children }) {
   if (!isSupervisor) return <Navigate to="/dashboard" replace />;
   return children;
 }
-function CanTradeRoute({ children }) {
-  const user = useAuthStore(s => s.user);
-  const { isSupervisor, canAny } = usePermissions();
 
-  if (user?.identity_type !== 'employee') {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  const canTrade = isSupervisor || canAny('trading');
-  if (!canTrade) return <Navigate to="/admin" replace />;
-
-  return children;
-}
 
 
 // Wrapper koji dozvoljava i klijentima i zaposlenima  ← NOVO
@@ -123,20 +111,15 @@ function ClientOrEmployeeRoute({ children }) {
   return children;
 }
 function OrdersPageGate({ children }) {
-  const user = useAuthStore(s => s.user);
+  const identityType = useAuthStore(s => s.user?.identity_type);
   const { isSupervisor, canAny } = usePermissions();
 
-  // backend trenutno pušta samo zaposlene
-  if (user?.identity_type !== 'employee') {
-    return <Navigate to="/dashboard" replace />;
-  }
+  // klijenti uvek smeju
+  if (identityType === 'client') return children;
 
-  // a od zaposlenih pušta one koji imaju trading (ili su supervizor)
+  // zaposleni: samo trading ili supervisor
   const canTrade = isSupervisor || canAny('trading');
-
-  if (!canTrade) {
-    return <Navigate to="/admin" replace />;
-  }
+  if (!canTrade) return <Navigate to="/admin" replace />;
 
   return children;
 }
